@@ -17,3 +17,7 @@
 
 # Air
 tmp/
+
+# mailpit
+extras/mailpit/data/
+extras/*/data/
