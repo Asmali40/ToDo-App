@@ -1,4 +1,4 @@
-package todo
+package entity
 
 type Todo struct {
 	ID          int
