@@ -3,6 +3,3 @@ services:
     image: sonarqube:community
     ports:
       - "9000:9000"
-    environment:
-      - SONARQUBE_USER=${SONARQUBE_USER}
-      - SONARQUBE_PASSWORD=&{SONARQUBE_PASSWORD}
