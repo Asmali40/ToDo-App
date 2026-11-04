@@ -2,3 +2,5 @@ include:
   - path: ../postgres/compose.yml
   - path: ../mailpit/compose.yml
   - path: ../sonarqube/compose.yml
+  - path: ../grafana/compose.yml
+  - path: ../prometheus/compose.yml
