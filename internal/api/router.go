@@ -1,7 +1,6 @@
 package api
 
-import "fmt"
+import "net/http"
 
-func main() {
-	fmt.Println("router.go")
-}
+
+http.HandleFunc(w http.ResponseWriter, q *http.Request)

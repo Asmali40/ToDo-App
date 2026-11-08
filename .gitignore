@@ -23,4 +23,4 @@ extras/mailpit/data/
 extras/*/data/
 
 # test-environment
-./test
+test

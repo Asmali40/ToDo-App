@@ -1,7 +1,17 @@
 package handler
 
-import "fmt"
+func add() {
 
-func main() {
-	fmt.Println("router.go")
+}
+
+func delete() {
+
+}
+
+func listAll() {
+
+}
+
+func edit() {
+
 }
