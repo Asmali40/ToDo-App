@@ -21,3 +21,6 @@ tmp/
 # mailpit
 extras/mailpit/data/
 extras/*/data/
+
+# test-environment
+./test
