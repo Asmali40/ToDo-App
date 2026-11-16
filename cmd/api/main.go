@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"os"
 )
 
 type Task struct {
@@ -14,12 +15,12 @@ type Task struct {
 
 func CreateTask(tasks []Task, task Task) ([]Task, error) {
 	if task.ID <= 0 || task.Title == "" || task.Description == "" {
-		return []Task{}, errors.New("task missing")
+		return tasks, errors.New("task missing")
 	}
 
-	for _, v := range tasks {
-		if task.ID == v.ID {
-			return []Task{}, errors.New("task with ID already exists")
+	for i, _ := range tasks {
+		if task.ID == tasks[i].ID {
+			return tasks, errors.New("task with ID already exists")
 		}
 	}
 	tasks = append(tasks, task)
@@ -28,16 +29,16 @@ func CreateTask(tasks []Task, task Task) ([]Task, error) {
 
 func DeleteTask(tasks []Task, id int) ([]Task, error) {
 	if id <= 0 {
-		return []Task{}, errors.New("invalid id")
+		return tasks, errors.New("invalid id")
 	}
 
-	for i, v := range tasks {
-		if v.ID == id {
+	for i, _ := range tasks {
+		if tasks[i].ID == id {
 			tasks = append(tasks[:i], tasks[i+1:]...)
 			return tasks, nil
 		}
 	}
-	return []Task{}, errors.New("task does not exist")
+	return tasks, errors.New("task does not exist")
 }
 
 func ListTasks(tasks []Task) error {
@@ -53,9 +54,9 @@ func ListTasks(tasks []Task) error {
 }
 
 func FindTask(tasks []Task, id int) (Task, error) {
-	for _, v := range tasks {
-		if v.ID == id {
-			return v, nil
+	for i, _ := range tasks {
+		if tasks[i].ID == id {
+			return tasks[i], nil
 		}
 	}
 	return Task{}, errors.New("task not found")
@@ -66,10 +67,10 @@ func UpdateTask(tasks []Task, id int, action string) ([]Task, error) {
 		return tasks, errors.New("invalid id")
 	}
 
-	for i, v := range tasks {
-		if v.ID == id {
+	for i, _ := range tasks {
+		if tasks[i].ID == id {
 			switch action {
-			case "Title":
+			case "1":
 				var newTitle string
 
 				fmt.Print("New Title: ")
@@ -82,7 +83,7 @@ func UpdateTask(tasks []Task, id int, action string) ([]Task, error) {
 				tasks[i].Title = newTitle
 				return tasks, nil
 
-			case "Description":
+			case "2":
 				var newDescription string
 
 				fmt.Print("New Description: ")
@@ -109,10 +110,10 @@ func CompleteTask(tasks []Task, id int) (Task, error) {
 		return Task{}, errors.New("invalid id")
 	}
 
-	for _, v := range tasks {
-		if v.ID == id && !v.Status {
-			v.Status = true
-			return v, nil
+	for i, _ := range tasks {
+		if tasks[i].ID == id && !tasks[i].Status {
+			tasks[i].Status = true
+			return tasks[i], nil
 		}
 	}
 	return Task{}, errors.New("task not found")
@@ -124,10 +125,10 @@ func UncompleteTask(tasks []Task, id int) (Task, error) {
 		return Task{}, errors.New("invalid id")
 	}
 
-	for _, v := range tasks {
-		if v.ID == id && v.Status {
-			v.Status = false
-			return v, nil
+	for i, _ := range tasks {
+		if tasks[i].ID == id && tasks[i].Status {
+			tasks[i].Status = false
+			return tasks[i], nil
 		}
 	}
 	return Task{}, errors.New("task not found")
@@ -137,9 +138,9 @@ func UncompleteTask(tasks []Task, id int) (Task, error) {
 func FilterTasks(tasks []Task, status bool) []Task {
 	filteredTasks := []Task{}
 
-	for _, v := range tasks {
-		if v.Status == status {
-			filteredTasks = append(filteredTasks, v)
+	for i, _ := range tasks {
+		if tasks[i].Status == status {
+			filteredTasks = append(filteredTasks, tasks[i])
 		}
 	}
 	return filteredTasks
@@ -164,15 +165,17 @@ func main() {
 		fmt.Println("3) list tasks")
 		fmt.Println("4) find tasks")
 		fmt.Println("5) update task")
-		fmt.Println("6) uncomplete task")
-		fmt.Println("7) filter tasks")
-		fmt.Println("8) count tasks")
-		fmt.Println("9) quit")
+		fmt.Println("6) complete task")
+		fmt.Println("7) uncomplete task")
+		fmt.Println("8) filter tasks")
+		fmt.Println("9) count tasks")
+		fmt.Println("10) quit")
 
 		var input string
 		fmt.Scan(&input)
 
 		switch input {
+
 		case "1":
 			var newId int
 			var newTitle string
@@ -189,14 +192,14 @@ func main() {
 				ID:          newId,
 				Title:       newTitle,
 				Description: newDescription,
-				Status:      true,
+				Status:      false,
 			}
 
-			res, err := CreateTask(tasks, t1)
+			tasks, err := CreateTask(tasks, t1)
 			if err != nil {
 				fmt.Println(err)
 			}
-			fmt.Println(res)
+			fmt.Println(tasks)
 
 		case "2":
 
@@ -205,11 +208,11 @@ func main() {
 			fmt.Print("task which you want to delete: ")
 			fmt.Scan(&input)
 
-			res, err := DeleteTask(tasks, input)
+			tasks, err := DeleteTask(tasks, input)
 			if err != nil {
 				fmt.Println(err)
 			}
-			fmt.Println(res)
+			fmt.Println(tasks)
 
 		case "3":
 			err := ListTasks(tasks)
@@ -224,11 +227,11 @@ func main() {
 			fmt.Print("task you want to find: ")
 			fmt.Scan(&input)
 
-			res, err := FindTask(tasks, input)
+			Task, err := FindTask(tasks, input)
 			if err != nil {
 				fmt.Println(err)
 			}
-			fmt.Println(res)
+			fmt.Println(Task)
 
 		case "5":
 			var input int
@@ -241,11 +244,11 @@ func main() {
 			fmt.Print("2) update description")
 			fmt.Scan(&action)
 
-			res, err := UpdateTask(tasks, input, action)
+			tasks, err := UpdateTask(tasks, input, action)
 			if err != nil {
 				fmt.Println(err)
 			}
-			fmt.Println(res)
+			fmt.Println(tasks)
 
 		case "6":
 			var input int
@@ -253,11 +256,11 @@ func main() {
 			fmt.Print("task you want to complete: ")
 			fmt.Scan(&input)
 
-			res, err := CompleteTask(tasks, input)
+			Task, err := CompleteTask(tasks, input)
 			if err != nil {
 				fmt.Println(err)
 			}
-			fmt.Println(res)
+			fmt.Println(Task)
 
 		case "7":
 			var input int
@@ -265,11 +268,11 @@ func main() {
 			fmt.Print("task you want to uncomplete: ")
 			fmt.Scan(&input)
 
-			res, err := UncompleteTask(tasks, input)
+			Task, err := UncompleteTask(tasks, input)
 			if err != nil {
 				fmt.Println(err)
 			}
-			fmt.Println(res)
+			fmt.Println(Task)
 
 		case "8":
 
@@ -288,16 +291,16 @@ func main() {
 				fmt.Println("invalid input")
 			}
 
-			res := FilterTasks(tasks, operator)
-			fmt.Println(res)
+			FilteredTasks := FilterTasks(tasks, operator)
+			fmt.Println(FilteredTasks)
 
 		case "9":
 			res := CountTasks(tasks)
 			fmt.Println(res)
 
-		case "Quit":
+		case "10":
 			fmt.Println("Programm wird beendet...")
-			break
+			os.Exit(0)
 
 		default:
 			fmt.Println("invalid input")
