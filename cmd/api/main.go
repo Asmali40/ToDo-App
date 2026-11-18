@@ -1,154 +1,11 @@
 package main
 
 import (
-	"errors"
+	"ToDo-App/internal/entity"
+	"ToDo-App/internal/service"
 	"fmt"
 	"os"
 )
-
-type Task struct {
-	ID          int
-	Title       string
-	Description string
-	Status      bool
-}
-
-func CreateTask(tasks []Task, task Task) ([]Task, error) {
-	if task.ID <= 0 || task.Title == "" || task.Description == "" {
-		return tasks, errors.New("task missing")
-	}
-
-	for i := range tasks {
-		if task.ID == tasks[i].ID {
-			return tasks, errors.New("task with ID already exists")
-		}
-	}
-	tasks = append(tasks, task)
-	return tasks, nil
-}
-
-func DeleteTask(tasks []Task, id int) ([]Task, error) {
-	if id <= 0 {
-		return tasks, errors.New("invalid id")
-	}
-
-	for i := range tasks {
-		if tasks[i].ID == id {
-			tasks = append(tasks[:i], tasks[i+1:]...)
-			return tasks, nil
-		}
-	}
-	return tasks, errors.New("task does not exist")
-}
-
-func ListTasks(tasks []Task) error {
-
-	if len(tasks) == 0 {
-		return errors.New("list is empty")
-	}
-
-	for _, v := range tasks {
-		fmt.Printf("ID: %v | TITLE: %v | DESCRIPTION: %v | STATUS: %v\n", v.ID, v.Title, v.Description, v.Status)
-	}
-	return nil
-}
-
-func FindTask(tasks []Task, id int) (Task, error) {
-	for i := range tasks {
-		if tasks[i].ID == id {
-			return tasks[i], nil
-		}
-	}
-	return Task{}, errors.New("task not found")
-}
-
-func UpdateTask(tasks []Task, id int, action string) ([]Task, error) {
-	if id <= 0 {
-		return tasks, errors.New("invalid id")
-	}
-
-	for i := range tasks {
-		if tasks[i].ID == id {
-			switch action {
-			case "1":
-				var newTitle string
-
-				fmt.Print("New Title: ")
-				fmt.Scan(&newTitle)
-
-				if newTitle == "" {
-					return tasks, errors.New("invalid input")
-				}
-
-				tasks[i].Title = newTitle
-				return tasks, nil
-
-			case "2":
-				var newDescription string
-
-				fmt.Print("New Description: ")
-				fmt.Scan(&newDescription)
-
-				if newDescription == "" {
-					return tasks, errors.New("invalid input")
-				}
-
-				tasks[i].Description = newDescription
-				return tasks, nil
-
-			default:
-				return tasks, errors.New("invalid input")
-
-			}
-		}
-	}
-	return tasks, errors.New("task with id does not exist")
-}
-
-func CompleteTask(tasks []Task, id int) (Task, error) {
-	if id <= 0 {
-		return Task{}, errors.New("invalid id")
-	}
-
-	for i := range tasks {
-		if tasks[i].ID == id && !tasks[i].Status {
-			tasks[i].Status = true
-			return tasks[i], nil
-		}
-	}
-	return Task{}, errors.New("task not found")
-
-}
-
-func UncompleteTask(tasks []Task, id int) (Task, error) {
-	if id <= 0 {
-		return Task{}, errors.New("invalid id")
-	}
-
-	for i := range tasks {
-		if tasks[i].ID == id && tasks[i].Status {
-			tasks[i].Status = false
-			return tasks[i], nil
-		}
-	}
-	return Task{}, errors.New("task not found")
-
-}
-
-func FilterTasks(tasks []Task, status bool) []Task {
-	filteredTasks := []Task{}
-
-	for i, _ := range tasks {
-		if tasks[i].Status == status {
-			filteredTasks = append(filteredTasks, tasks[i])
-		}
-	}
-	return filteredTasks
-}
-
-func CountTasks(tasks []Task) int {
-	return len(tasks)
-}
 
 func main() {
 	var err error
@@ -156,7 +13,7 @@ func main() {
 	var action string
 	var operator bool
 	var inputID int
-	tasks := []Task{}
+	tasks := []entity.Task{}
 
 	for {
 		fmt.Println("---------------------------------------------------------")
@@ -191,7 +48,7 @@ func main() {
 			fmt.Print("Description: ")
 			fmt.Scan(&newDescription)
 
-			t1 := Task{
+			t1 := entity.Task{
 				ID:          newId,
 				Title:       newTitle,
 				Description: newDescription,
@@ -199,7 +56,7 @@ func main() {
 			}
 
 			var err error
-			tasks, err = CreateTask(tasks, t1)
+			tasks, err = service.CreateTask(tasks, t1)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -209,7 +66,7 @@ func main() {
 			fmt.Print("task which you want to delete: ")
 			fmt.Scan(&input)
 
-			tasks, err = DeleteTask(tasks, inputID)
+			tasks, err = service.DeleteTask(tasks, inputID)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -218,7 +75,7 @@ func main() {
 		case "3":
 			var err error
 
-			err = ListTasks(tasks)
+			err = service.ListTasks(tasks)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -227,7 +84,7 @@ func main() {
 			fmt.Print("task you want to find: ")
 			fmt.Scan(&input)
 
-			Task, err := FindTask(tasks, inputID)
+			Task, err := service.FindTask(tasks, inputID)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -241,7 +98,7 @@ func main() {
 			fmt.Print("2) update description")
 			fmt.Scan(&action)
 
-			tasks, err = UpdateTask(tasks, inputID, action)
+			tasks, err = service.UpdateTask(tasks, inputID, action)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -251,7 +108,7 @@ func main() {
 			fmt.Print("task you want to complete: ")
 			fmt.Scan(&input)
 
-			Task, err := CompleteTask(tasks, inputID)
+			Task, err := service.CompleteTask(tasks, inputID)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -261,7 +118,7 @@ func main() {
 			fmt.Print("task you want to uncomplete: ")
 			fmt.Scan(&input)
 
-			Task, err := UncompleteTask(tasks, inputID)
+			Task, err := service.UncompleteTask(tasks, inputID)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -280,11 +137,11 @@ func main() {
 				fmt.Println("invalid input")
 			}
 
-			FilteredTasks := FilterTasks(tasks, operator)
+			FilteredTasks := service.FilterTasks(tasks, operator)
 			fmt.Println(FilteredTasks)
 
 		case "9":
-			res := CountTasks(tasks)
+			res := service.CountTasks(tasks)
 			fmt.Println(res)
 
 		case "10":
