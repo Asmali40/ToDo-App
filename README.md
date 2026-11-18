@@ -1,15 +1,15 @@
 # ToDo App
 
-A REST API built with Go and Gin which uses PostgreSQL as the database.
+Plan: A REST API built with Go and Gin which uses PostgreSQL as the database and TS with React and Vite / HTML
 
 ## Tech Stack
 
-- **Backend:** Go, Gin Gonic
-- **Database:** PostgreSQL
-- **Tooling & Environment:** Docker & Docker Compose, Air (Live Reload)
-- **Quality & Security:** SonarQube
-- **Observability:** Prometheus & Grafana
-- **Testing:** Mailpit (Email), Bruno (API Client)
+- **Backend:** Go, Gin Gonic planned for later
+- **Database:** PostgreSQL planned for later
+- **Tooling & Environment:** Docker & Docker Compose, Air (Live Reload) planned for later
+- **Quality & Security:** SonarQube planned for later
+- **Observability:** Prometheus & Grafana planned for later
+- **Testing:** Mailpit (Email), Bruno (API Client) planned for later
 
 ## Infrastructure Ports
 
@@ -39,4 +39,14 @@ docker compose up -d
 Start the Go backend with live-reloading enabled:
 ```bash
 air
+```
+
+### For now
+swtich to
+```bash
+cd ./cmd/api
+```
+and type
+```bash
+go run .
 ```
