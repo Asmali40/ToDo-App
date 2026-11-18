@@ -18,7 +18,7 @@ func CreateTask(tasks []Task, task Task) ([]Task, error) {
 		return tasks, errors.New("task missing")
 	}
 
-	for i, _ := range tasks {
+	for i := range tasks {
 		if task.ID == tasks[i].ID {
 			return tasks, errors.New("task with ID already exists")
 		}
@@ -32,7 +32,7 @@ func DeleteTask(tasks []Task, id int) ([]Task, error) {
 		return tasks, errors.New("invalid id")
 	}
 
-	for i, _ := range tasks {
+	for i := range tasks {
 		if tasks[i].ID == id {
 			tasks = append(tasks[:i], tasks[i+1:]...)
 			return tasks, nil
@@ -54,7 +54,7 @@ func ListTasks(tasks []Task) error {
 }
 
 func FindTask(tasks []Task, id int) (Task, error) {
-	for i, _ := range tasks {
+	for i := range tasks {
 		if tasks[i].ID == id {
 			return tasks[i], nil
 		}
@@ -67,7 +67,7 @@ func UpdateTask(tasks []Task, id int, action string) ([]Task, error) {
 		return tasks, errors.New("invalid id")
 	}
 
-	for i, _ := range tasks {
+	for i := range tasks {
 		if tasks[i].ID == id {
 			switch action {
 			case "1":
@@ -110,7 +110,7 @@ func CompleteTask(tasks []Task, id int) (Task, error) {
 		return Task{}, errors.New("invalid id")
 	}
 
-	for i, _ := range tasks {
+	for i := range tasks {
 		if tasks[i].ID == id && !tasks[i].Status {
 			tasks[i].Status = true
 			return tasks[i], nil
@@ -125,7 +125,7 @@ func UncompleteTask(tasks []Task, id int) (Task, error) {
 		return Task{}, errors.New("invalid id")
 	}
 
-	for i, _ := range tasks {
+	for i := range tasks {
 		if tasks[i].ID == id && tasks[i].Status {
 			tasks[i].Status = false
 			return tasks[i], nil
@@ -151,6 +151,11 @@ func CountTasks(tasks []Task) int {
 }
 
 func main() {
+	var err error
+	var input string
+	var action string
+	var operator bool
+	var inputID int
 	tasks := []Task{}
 
 	for {
@@ -171,11 +176,9 @@ func main() {
 		fmt.Println("9) count tasks")
 		fmt.Println("10) quit")
 
-		var input string
 		fmt.Scan(&input)
 
 		switch input {
-
 		case "1":
 			var newId int
 			var newTitle string
@@ -195,48 +198,42 @@ func main() {
 				Status:      false,
 			}
 
-			tasks, err := CreateTask(tasks, t1)
+			var err error
+			tasks, err = CreateTask(tasks, t1)
 			if err != nil {
 				fmt.Println(err)
 			}
 			fmt.Println(tasks)
 
 		case "2":
-
-			var input int
-
 			fmt.Print("task which you want to delete: ")
 			fmt.Scan(&input)
 
-			tasks, err := DeleteTask(tasks, input)
+			tasks, err = DeleteTask(tasks, inputID)
 			if err != nil {
 				fmt.Println(err)
 			}
 			fmt.Println(tasks)
 
 		case "3":
-			err := ListTasks(tasks)
+			var err error
+
+			err = ListTasks(tasks)
 			if err != nil {
 				fmt.Println(err)
 			}
 
 		case "4":
-
-			var input int
-
 			fmt.Print("task you want to find: ")
 			fmt.Scan(&input)
 
-			Task, err := FindTask(tasks, input)
+			Task, err := FindTask(tasks, inputID)
 			if err != nil {
 				fmt.Println(err)
 			}
 			fmt.Println(Task)
 
 		case "5":
-			var input int
-			var action string
-
 			fmt.Print("task you want to update: ")
 			fmt.Scan(&input)
 
@@ -244,48 +241,40 @@ func main() {
 			fmt.Print("2) update description")
 			fmt.Scan(&action)
 
-			tasks, err := UpdateTask(tasks, input, action)
+			tasks, err = UpdateTask(tasks, inputID, action)
 			if err != nil {
 				fmt.Println(err)
 			}
 			fmt.Println(tasks)
 
 		case "6":
-			var input int
-
 			fmt.Print("task you want to complete: ")
 			fmt.Scan(&input)
 
-			Task, err := CompleteTask(tasks, input)
+			Task, err := CompleteTask(tasks, inputID)
 			if err != nil {
 				fmt.Println(err)
 			}
 			fmt.Println(Task)
 
 		case "7":
-			var input int
-
 			fmt.Print("task you want to uncomplete: ")
 			fmt.Scan(&input)
 
-			Task, err := UncompleteTask(tasks, input)
+			Task, err := UncompleteTask(tasks, inputID)
 			if err != nil {
 				fmt.Println(err)
 			}
 			fmt.Println(Task)
 
 		case "8":
-
-			var input int
-			var operator bool
-
 			fmt.Print("1) show done tasks")
 			fmt.Println("2) show open tasks")
 			fmt.Scan(&input)
 
-			if input == 1 {
+			if inputID == 1 {
 				operator = true
-			} else if input == 2 {
+			} else if inputID == 2 {
 				operator = false
 			} else {
 				fmt.Println("invalid input")
