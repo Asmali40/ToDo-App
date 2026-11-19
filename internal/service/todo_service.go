@@ -7,7 +7,7 @@ import (
 )
 
 type TodoService struct {
-	tasks []entity.Task
+	tasks []*entity.Task
 }
 
 func (t *TodoService) CreateTask(task entity.Task) (error) {
@@ -20,31 +20,31 @@ func (t *TodoService) CreateTask(task entity.Task) (error) {
 			return errors.New("task with ID already exists")
 		}
 	}
-	t.tasks = append(t.tasks, task)
+	t.tasks = append(t.tasks, &task)
 	return nil
 }
 
-func (t *TodoService) DeleteTask(tasks []entity.Task, id int) (error) {
+func (t *TodoService) DeleteTask(id int) (error) {
 	if id <= 0 {
 		return errors.New("invalid id")
 	}
 
-	for i := range tasks {
-		if tasks[i].ID == id {
-			tasks = append(tasks[:i], tasks[i+1:]...)
+	for i, v := range t.tasks {
+		if v.ID == id {
+			t.tasks = append(t.tasks[:i], t.tasks[i+1:]...)
 			return nil
 		}
 	}
 	return errors.New("task does not exist")
 }
 
-func (t *TodoService) ListTasks(tasks []entity.Task) error {
+func (t *TodoService) ListTasks() error {
 
-	if len(tasks) == 0 {
+	if len(t.tasks) == 0 {
 		return errors.New("list is empty")
 	}
 
-	for _, v := range tasks {
+	for _, v := range t.tasks {
 		fmt.Printf("ID: %v | TITLE: %v | DESCRIPTION: %v | STATUS: %v\n", v.ID, v.Title, v.Description, v.Status)
 	}
 	return nil
@@ -53,7 +53,7 @@ func (t *TodoService) ListTasks(tasks []entity.Task) error {
 func (t *TodoService) FindTask(id int) (entity.Task, error) {
 	for _, v := range t.tasks {
 		if v.ID == id {
-			return v, nil
+			return *v, nil
 		}
 	}
 	return entity.Task{}, errors.New("task not found")
@@ -137,7 +137,7 @@ func (t *TodoService) FilterTasks(status bool) []entity.Task {
 
 	for _, v := range t.tasks {
 		if v.Status == status {
-			filteredTasks = append(filteredTasks, v)
+			filteredTasks = append(filteredTasks, *v)
 		}
 	}
 	return filteredTasks
