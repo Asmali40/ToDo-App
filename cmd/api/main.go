@@ -15,6 +15,8 @@ func main() {
 	var inputID int
 	tasks := []entity.Task{}
 
+	todoService := service.TodoService{}
+
 	for {
 		fmt.Println("---------------------------------------------------------")
 		fmt.Println("------------------------TODO-APP-------------------------")
@@ -56,7 +58,7 @@ func main() {
 			}
 
 			var err error
-			tasks, err = service.CreateTask(tasks, t1)
+			err = todoService.CreateTask(t1)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -66,7 +68,7 @@ func main() {
 			fmt.Print("task which you want to delete: ")
 			fmt.Scan(&input)
 
-			tasks, err = service.DeleteTask(tasks, inputID)
+			err = todoService.DeleteTask(inputID)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -75,7 +77,7 @@ func main() {
 		case "3":
 			var err error
 
-			err = service.ListTasks(tasks)
+			err = todoService.ListTasks()
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -84,11 +86,12 @@ func main() {
 			fmt.Print("task you want to find: ")
 			fmt.Scan(&input)
 
-			Task, err := service.FindTask(tasks, inputID)
+			task, err := todoService.FindTask(inputID)
 			if err != nil {
 				fmt.Println(err)
+			} else {
+				fmt.Println(task)
 			}
-			fmt.Println(Task)
 
 		case "5":
 			fmt.Print("task you want to update: ")
@@ -98,7 +101,7 @@ func main() {
 			fmt.Print("2) update description")
 			fmt.Scan(&action)
 
-			tasks, err = service.UpdateTask(tasks, inputID, action)
+			err = todoService.UpdateTask(inputID, action)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -108,21 +111,19 @@ func main() {
 			fmt.Print("task you want to complete: ")
 			fmt.Scan(&input)
 
-			Task, err := service.CompleteTask(tasks, inputID)
+			err := todoService.CompleteTask(inputID)
 			if err != nil {
 				fmt.Println(err)
 			}
-			fmt.Println(Task)
 
 		case "7":
 			fmt.Print("task you want to uncomplete: ")
 			fmt.Scan(&input)
 
-			Task, err := service.UncompleteTask(tasks, inputID)
+			err := todoService.UncompleteTask(inputID)
 			if err != nil {
 				fmt.Println(err)
 			}
-			fmt.Println(Task)
 
 		case "8":
 			fmt.Print("1) show done tasks")
@@ -137,11 +138,11 @@ func main() {
 				fmt.Println("invalid input")
 			}
 
-			FilteredTasks := service.FilterTasks(tasks, operator)
+			FilteredTasks := todoService.FilterTasks(operator)
 			fmt.Println(FilteredTasks)
 
 		case "9":
-			res := service.CountTasks(tasks)
+			res := todoService.CountTasks()
 			fmt.Println(res)
 
 		case "10":
