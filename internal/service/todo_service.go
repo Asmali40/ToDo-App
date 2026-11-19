@@ -6,35 +6,39 @@ import (
 	"fmt"
 )
 
-func CreateTask(tasks []entity.Task, task entity.Task) ([]entity.Task, error) {
-	if task.ID <= 0 || task.Title == "" || task.Description == "" {
-		return tasks, errors.New("task missing")
-	}
-
-	for i := range tasks {
-		if task.ID == tasks[i].ID {
-			return tasks, errors.New("task with ID already exists")
-		}
-	}
-	tasks = append(tasks, task)
-	return tasks, nil
+type TodoService struct {
+	tasks []entity.Task
 }
 
-func DeleteTask(tasks []entity.Task, id int) ([]entity.Task, error) {
+func (t *TodoService) CreateTask(task entity.Task) (error) {
+	if task.ID <= 0 || task.Title == "" || task.Description == "" {
+		return errors.New("task missing")
+	}
+
+	for i := range t.tasks {
+		if task.ID == t.tasks[i].ID {
+			return errors.New("task with ID already exists")
+		}
+	}
+	t.tasks = append(t.tasks, task)
+	return nil
+}
+
+func (t *TodoService) DeleteTask(tasks []entity.Task, id int) (error) {
 	if id <= 0 {
-		return tasks, errors.New("invalid id")
+		return errors.New("invalid id")
 	}
 
 	for i := range tasks {
 		if tasks[i].ID == id {
 			tasks = append(tasks[:i], tasks[i+1:]...)
-			return tasks, nil
+			return nil
 		}
 	}
-	return tasks, errors.New("task does not exist")
+	return errors.New("task does not exist")
 }
 
-func ListTasks(tasks []entity.Task) error {
+func (t *TodoService) ListTasks(tasks []entity.Task) error {
 
 	if len(tasks) == 0 {
 		return errors.New("list is empty")
@@ -46,22 +50,22 @@ func ListTasks(tasks []entity.Task) error {
 	return nil
 }
 
-func FindTask(tasks []entity.Task, id int) (entity.Task, error) {
-	for i := range tasks {
-		if tasks[i].ID == id {
-			return tasks[i], nil
+func (t *TodoService) FindTask(id int) (entity.Task, error) {
+	for _, v := range t.tasks {
+		if v.ID == id {
+			return v, nil
 		}
 	}
 	return entity.Task{}, errors.New("task not found")
 }
 
-func UpdateTask(tasks []entity.Task, id int, action string) ([]entity.Task, error) {
+func (t *TodoService) UpdateTask(id int, action string) error {
 	if id <= 0 {
-		return tasks, errors.New("invalid id")
+		return errors.New("invalid id")
 	}
 
-	for i := range tasks {
-		if tasks[i].ID == id {
+	for _, v := range t.tasks {
+		if v.ID == id {
 			switch action {
 			case "1":
 				var newTitle string
@@ -70,11 +74,11 @@ func UpdateTask(tasks []entity.Task, id int, action string) ([]entity.Task, erro
 				fmt.Scan(&newTitle)
 
 				if newTitle == "" {
-					return tasks, errors.New("invalid input")
+					return errors.New("invalid input")
 				}
 
-				tasks[i].Title = newTitle
-				return tasks, nil
+				v.Title = newTitle
+				return nil
 
 			case "2":
 				var newDescription string
@@ -83,62 +87,66 @@ func UpdateTask(tasks []entity.Task, id int, action string) ([]entity.Task, erro
 				fmt.Scan(&newDescription)
 
 				if newDescription == "" {
-					return tasks, errors.New("invalid input")
+					return errors.New("invalid input")
 				}
 
-				tasks[i].Description = newDescription
-				return tasks, nil
+				v.Description = newDescription
+				return nil
 
 			default:
-				return tasks, errors.New("invalid input")
+				return errors.New("invalid input")
 
 			}
 		}
 	}
-	return tasks, errors.New("task with id does not exist")
+	return errors.New("task with id does not exist")
 }
 
-func CompleteTask(tasks []entity.Task, id int) (entity.Task, error) {
+func (t *TodoService) CompleteTask(id int) error {
 	if id <= 0 {
-		return entity.Task{}, errors.New("invalid id")
+		return errors.New("invalid id")
 	}
 
-	for i := range tasks {
-		if tasks[i].ID == id && !tasks[i].Status {
-			tasks[i].Status = true
-			return tasks[i], nil
+	for _, v := range t.tasks {
+		if v.ID == id && !v.Status {
+			v.Status = true
+			return nil
 		}
 	}
-	return entity.Task{}, errors.New("task not found")
+	return errors.New("task not found")
 
 }
 
-func UncompleteTask(tasks []entity.Task, id int) (entity.Task, error) {
+func (t *TodoService) UncompleteTask(id int) error {
 	if id <= 0 {
-		return entity.Task{}, errors.New("invalid id")
+		return errors.New("invalid id")
 	}
 
-	for i := range tasks {
-		if tasks[i].ID == id && tasks[i].Status {
-			tasks[i].Status = false
-			return tasks[i], nil
+	for _, v := range t.tasks {
+		if v.ID == id && v.Status {
+			v.Status = false
+			return nil
 		}
 	}
-	return entity.Task{}, errors.New("task not found")
+	return errors.New("task not found")
 
 }
 
-func FilterTasks(tasks []entity.Task, status bool) []entity.Task {
+func (t *TodoService) FilterTasks(status bool) []entity.Task {
 	filteredTasks := []entity.Task{}
 
-	for i, _ := range tasks {
-		if tasks[i].Status == status {
-			filteredTasks = append(filteredTasks, tasks[i])
+	for _, v := range t.tasks {
+		if v.Status == status {
+			filteredTasks = append(filteredTasks, v)
 		}
 	}
 	return filteredTasks
 }
 
-func CountTasks(tasks []entity.Task) int {
-	return len(tasks)
+func (t *TodoService) CountTasks() int {
+	return len(t.tasks)
+}
+
+func CreateToDoService() *TodoService {
+	return &TodoService{}
 }
